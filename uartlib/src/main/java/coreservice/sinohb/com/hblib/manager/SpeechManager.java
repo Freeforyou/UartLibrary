@@ -79,7 +79,7 @@ public class SpeechManager {
      * name:联系人名称  number：联系人号码
      */
     public void reporBlueToothPhoneComming(String name, String number) {
-        L.i(Tag, "reporBlueToothPhoneComming name:" + name+"  number:"+number);
+        L.i(Tag, "reporBlueToothPhoneComming name:" + name + "  number:" + number);
         if (isRemoteServiceAlive()) {
             try {
                 speechService.reporBlueToothPhoneComming(name, number);
@@ -498,6 +498,7 @@ public class SpeechManager {
         if (linister != null) {
             if (!airControlLinisterHashMap.containsKey(linister.toString())) {
                 airControlLinisterHashMap.put(linister.toString(), linister);
+                setAirControlLinister();
             }
         }
     }
@@ -728,8 +729,6 @@ public class SpeechManager {
             }
         }
     }
-
-
 
 
     public void setBinder(IBinder service) {
