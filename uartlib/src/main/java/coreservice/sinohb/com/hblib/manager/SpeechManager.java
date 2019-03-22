@@ -706,7 +706,6 @@ public class SpeechManager {
         }
     }
 
-
     private void setRadioControlLinister() {
         L.i(Tag, "setRadioControlLinister ");
         if (isRemoteServiceAlive()) {
@@ -730,11 +729,24 @@ public class SpeechManager {
         }
     }
 
+    private void reconnectCallback() {
+        if (ReconnectSpeechInterface.hasRegister_IAirControlLinister) {
+            setAirControlLinister();
+        }
+        if (ReconnectSpeechInterface.hasRegister_IBlueToothLinister) {
+            setBlueToothLinister();
+        }
+        if (ReconnectSpeechInterface.hasRegister_IRadioControlLinister) {
+            setRadioControlLinister();
+        }
+    }
+
 
     public void setBinder(IBinder service) {
         L.i(Tag, "setBinder");
         if (service != null) {
             speechService = ISpeechManager.Stub.asInterface(service);
+            reconnectCallback();
         }
     }
 }
