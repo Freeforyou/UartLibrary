@@ -62,7 +62,7 @@ public class McuManager {
         return mcuManager;
     }
 
-
+    
     private boolean isRemoteServiceAlive() {
         if (systemService != null) {
             return true;
@@ -70,6 +70,19 @@ public class McuManager {
             L.i(Tag, "remoteService is null");
             return false;
         }
+    }
+
+    public int getPowerState() {
+        int power = 0x00;
+        L.i(Tag, "getPowerState");
+        if (isRemoteServiceAlive()) {
+            try {
+                power = systemService.getPowerState();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return power;
     }
 
 
