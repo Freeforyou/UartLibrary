@@ -20,6 +20,7 @@ import com.sinohb.coreservice.transport.system.IBackCarLinister;
 
 interface ISystemManager {
 
+    int  getPowerState();
     int  getBrightness();
     void setBrightness(int brightness,int type);
     void setBacklightSwitch(boolean bool);
