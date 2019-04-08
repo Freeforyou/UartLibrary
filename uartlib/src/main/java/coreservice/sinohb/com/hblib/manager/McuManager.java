@@ -1406,13 +1406,24 @@ public class McuManager {
     IHeadsetLinister.Stub iHeadsetLinister = new IHeadsetLinister.Stub() {
         @Override
         public void onHeadsetLinister(int state) throws RemoteException {
-
+            L.i(Tag, "onHeadsetLinister  state:"+state);
+            for (String key : headsetLinisterHashMap.keySet()) {
+                if (headsetLinisterHashMap.get(key) != null) {
+                    headsetLinisterHashMap.get(key).onHeadsetLinister(state);
+                } else {
+                    headsetLinisterHashMap.remove(key);
+                    if (headsetLinisterHashMap.size() <= 0) {
+                        removeBackCarLinister();
+                    }
+                }
+            }
         }
     };
 
     HashMap<String, HeadsetLinister> headsetLinisterHashMap = new HashMap<>();
 
     public void setHeadsetLinister(HeadsetLinister linister) {
+        L.i(Tag, "setHeadsetLinister");
         ReconnectSystemInterface.hasRegister_IHeadSet = true;
         if (linister != null) {
             if (!headsetLinisterHashMap.containsKey(linister.toString())) {
@@ -1423,6 +1434,7 @@ public class McuManager {
     }
 
     public void removeHeadsetLinister(HeadsetLinister linister) {
+        L.i(Tag, "removeHeadsetLinister");
         if (linister != null) {
             if (headsetLinisterHashMap.containsKey(linister.toString())) {
                 headsetLinisterHashMap.remove(linister.toString());
