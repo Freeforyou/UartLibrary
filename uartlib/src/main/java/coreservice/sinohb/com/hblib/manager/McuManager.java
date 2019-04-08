@@ -12,6 +12,7 @@ import com.sinohb.coreservice.transport.system.IBackCarLinister;
 import com.sinohb.coreservice.transport.system.IBacklightSwitchLinister;
 import com.sinohb.coreservice.transport.system.IBrightnessLinister;
 import com.sinohb.coreservice.transport.system.ICarLightLinister;
+import com.sinohb.coreservice.transport.system.IHeadsetLinister;
 import com.sinohb.coreservice.transport.system.IKeyLinister;
 import com.sinohb.coreservice.transport.system.IMcuUpgradeLinister;
 import com.sinohb.coreservice.transport.system.IPassthroughDataLinister;
@@ -34,6 +35,7 @@ import coreservice.sinohb.com.hblib.interfaces.system.BackCarLinister;
 import coreservice.sinohb.com.hblib.interfaces.system.BacklightSwitchLinister;
 import coreservice.sinohb.com.hblib.interfaces.system.BrightnessLinister;
 import coreservice.sinohb.com.hblib.interfaces.system.CarLightLinister;
+import coreservice.sinohb.com.hblib.interfaces.system.HeadsetLinister;
 import coreservice.sinohb.com.hblib.interfaces.system.McuUpgradeLinister;
 import coreservice.sinohb.com.hblib.interfaces.system.PassthroughDataLinister;
 import coreservice.sinohb.com.hblib.interfaces.system.PowerStateLinister;
@@ -62,7 +64,7 @@ public class McuManager {
         return mcuManager;
     }
 
-    
+
     private boolean isRemoteServiceAlive() {
         if (systemService != null) {
             return true;
@@ -347,6 +349,30 @@ public class McuManager {
         if (isRemoteServiceAlive()) {
             try {
                 systemService.reportSystemReset(state);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public int getHeadsetState() {
+        L.i(Tag, "getHeadsetState()");
+        int state = 0;
+        if (isRemoteServiceAlive()) {
+            try {
+                state = systemService.getHeadsetState();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return state;
+    }
+
+    public void requestHeadsetState() {
+        L.i(Tag, "requestHeadsetState()");
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.requestHeadsetState();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -1376,6 +1402,60 @@ public class McuManager {
         }
     }
 
+
+    IHeadsetLinister.Stub iHeadsetLinister = new IHeadsetLinister.Stub() {
+        @Override
+        public void onHeadsetLinister(int state) throws RemoteException {
+
+        }
+    };
+
+    HashMap<String, HeadsetLinister> headsetLinisterHashMap = new HashMap<>();
+
+    public void setHeadsetLinister(HeadsetLinister linister) {
+        ReconnectSystemInterface.hasRegister_IHeadSet = true;
+        if (linister != null) {
+            if (!headsetLinisterHashMap.containsKey(linister.toString())) {
+                headsetLinisterHashMap.put(linister.toString(), linister);
+                setHeadsetLinister();
+            }
+        }
+    }
+
+    public void removeHeadsetLinister(HeadsetLinister linister) {
+        if (linister != null) {
+            if (headsetLinisterHashMap.containsKey(linister.toString())) {
+                headsetLinisterHashMap.remove(linister.toString());
+                if (headsetLinisterHashMap.size() <= 0) {
+                    removeHeadsetLinister();
+                }
+            }
+        }
+    }
+
+
+    private void setHeadsetLinister() {
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.setHeadsetLinister(iHeadsetLinister);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void removeHeadsetLinister() {
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.removeHeadsetLinister(iHeadsetLinister);
+                ReconnectSystemInterface.hasRegister_IHeadSet = false;
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     private void reconnectCallback() {
         if (ReconnectSystemInterface.hasRegister_IBacklightSwitchLinister) {
             setBacklightSwitchLinister();
@@ -1424,6 +1504,9 @@ public class McuManager {
         }
         if (ReconnectSystemInterface.hasRegister_IBackCarLinister) {
             setBackCarLinister();
+        }
+        if (ReconnectSystemInterface.hasRegister_IHeadSet){
+            setHeadsetLinister();
         }
     }
 

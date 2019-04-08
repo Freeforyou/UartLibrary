@@ -17,6 +17,7 @@ import com.sinohb.coreservice.transport.system.ICarLightLinister;
 import com.sinohb.coreservice.transport.system.IApplicationLinister;
 import com.sinohb.coreservice.transport.system.IAudioFocusLinister;
 import com.sinohb.coreservice.transport.system.IBackCarLinister;
+import com.sinohb.coreservice.transport.system.IHeadsetLinister;
 
 interface ISystemManager {
 
@@ -43,6 +44,9 @@ interface ISystemManager {
     int getCarLightState(int type);
     void reportPhoneState(int type,String number);
     void reportSystemReset(int state);
+
+    int getHeadsetState();
+    void requestHeadsetState();
 
 
 
@@ -96,4 +100,7 @@ interface ISystemManager {
 
     void setBackCarLinister(in IBackCarLinister linister);
     void removeBackCarLinister(in IBackCarLinister linister);
+
+    void setHeadsetLinister(in IHeadsetLinister linister);
+    void removeHeadsetLinister(in IHeadsetLinister linister);
 }
