@@ -749,4 +749,8 @@ public class SpeechManager {
             reconnectCallback();
         }
     }
+
+    public void crashBinder(){
+        speechService = null;
+    }
 }

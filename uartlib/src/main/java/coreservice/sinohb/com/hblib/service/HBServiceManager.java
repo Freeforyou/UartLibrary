@@ -117,6 +117,8 @@ public class HBServiceManager {
         public void onServiceDisconnected(ComponentName componentName) {
             L.i(callPackage, "Service  Disconnected  maybe the remoute service has daid ");
             service = null;
+            McuManager.getInstance().crashBinder();
+            SpeechManager.getInstance().crashBinder();
             if (serviceStateLinister != null) {
                 serviceStateLinister.onServiceDisconnected();
             }

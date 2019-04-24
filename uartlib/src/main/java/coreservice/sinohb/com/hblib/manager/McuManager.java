@@ -516,11 +516,12 @@ public class McuManager {
 
     private HashMap<String, SystemKeyLinister> stringSystemKeyLinisterHashMap = new HashMap<>();
     private IKeyLinister.Stub iKeyLinister = new IKeyLinister.Stub() {
+
         @Override
-        public void onSystemKeyLinister(int keycode, int action) throws RemoteException {
+        public void onSystemKeyLinister(int type, int keycode, int action) throws RemoteException {
             for (String key : stringSystemKeyLinisterHashMap.keySet()) {
                 if (stringSystemKeyLinisterHashMap.get(key) != null) {
-                    stringSystemKeyLinisterHashMap.get(key).onSystemKeyLinister(keycode, action);
+                    stringSystemKeyLinisterHashMap.get(key).onSystemKeyLinister(type, keycode, action);
                 } else {
                     stringSystemKeyLinisterHashMap.remove(key);
                     if (stringSystemKeyLinisterHashMap.size() <= 0) {
@@ -1406,7 +1407,7 @@ public class McuManager {
     IHeadsetLinister.Stub iHeadsetLinister = new IHeadsetLinister.Stub() {
         @Override
         public void onHeadsetLinister(int state) throws RemoteException {
-            L.i(Tag, "onHeadsetLinister  state:"+state);
+            L.i(Tag, "onHeadsetLinister  state:" + state);
             for (String key : headsetLinisterHashMap.keySet()) {
                 if (headsetLinisterHashMap.get(key) != null) {
                     headsetLinisterHashMap.get(key).onHeadsetLinister(state);
@@ -1517,7 +1518,7 @@ public class McuManager {
         if (ReconnectSystemInterface.hasRegister_IBackCarLinister) {
             setBackCarLinister();
         }
-        if (ReconnectSystemInterface.hasRegister_IHeadSet){
+        if (ReconnectSystemInterface.hasRegister_IHeadSet) {
             setHeadsetLinister();
         }
     }
@@ -1530,5 +1531,8 @@ public class McuManager {
         }
     }
 
+    public void crashBinder() {
+        systemService = null;
+    }
 
 }
