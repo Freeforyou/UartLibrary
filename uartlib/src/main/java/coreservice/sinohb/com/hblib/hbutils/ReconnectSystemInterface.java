@@ -20,4 +20,6 @@ public class ReconnectSystemInterface {
     public static boolean hasRegister_IAudioFocusLinister = false;
     public static boolean hasRegister_IBackCarLinister = false;
     public static boolean hasRegister_IHeadSet = false;
+
+    public static boolean hasRegister_IRecorderLinister = false;
 }

@@ -18,6 +18,7 @@ import com.sinohb.coreservice.transport.system.IApplicationLinister;
 import com.sinohb.coreservice.transport.system.IAudioFocusLinister;
 import com.sinohb.coreservice.transport.system.IBackCarLinister;
 import com.sinohb.coreservice.transport.system.IHeadsetLinister;
+import com.sinohb.coreservice.transport.system.IRecorderLinister;
 
 interface ISystemManager {
 
@@ -48,7 +49,7 @@ interface ISystemManager {
     int getHeadsetState();
     void requestHeadsetState();
 
-
+    void sendRecorderData(int groupID,int commandID,inout byte [] data);
 
     void sendPassthroughData(int groupID,int commandID,inout byte [] data);
     void sendRadioDatas(int groupID,int commandID,inout byte [] data);
@@ -103,4 +104,7 @@ interface ISystemManager {
 
     void setHeadsetLinister(in IHeadsetLinister linister);
     void removeHeadsetLinister(in IHeadsetLinister linister);
+
+    void setRecorderLinister(in IRecorderLinister linister);
+    void removeRecorderLinister(in IRecorderLinister linister);
 }

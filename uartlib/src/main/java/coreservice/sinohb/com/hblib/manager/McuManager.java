@@ -18,6 +18,7 @@ import com.sinohb.coreservice.transport.system.IMcuUpgradeLinister;
 import com.sinohb.coreservice.transport.system.IPassthroughDataLinister;
 import com.sinohb.coreservice.transport.system.IPowerStateLinister;
 import com.sinohb.coreservice.transport.system.IRadioLinister;
+import com.sinohb.coreservice.transport.system.IRecorderLinister;
 import com.sinohb.coreservice.transport.system.ISoundfieldLinister;
 import com.sinohb.coreservice.transport.system.ISystemEQLinister;
 import com.sinohb.coreservice.transport.system.ISystemMuteLinister;
@@ -40,6 +41,7 @@ import coreservice.sinohb.com.hblib.interfaces.system.McuUpgradeLinister;
 import coreservice.sinohb.com.hblib.interfaces.system.PassthroughDataLinister;
 import coreservice.sinohb.com.hblib.interfaces.system.PowerStateLinister;
 import coreservice.sinohb.com.hblib.interfaces.system.RadioLinister;
+import coreservice.sinohb.com.hblib.interfaces.system.RecorderLinister;
 import coreservice.sinohb.com.hblib.interfaces.system.SoundfieldLinister;
 import coreservice.sinohb.com.hblib.interfaces.system.SystemEQLinister;
 import coreservice.sinohb.com.hblib.interfaces.system.SystemKeyLinister;
@@ -321,6 +323,19 @@ public class McuManager {
             }
         }
     }
+
+
+    public void sendRecorderData(int groupID, int commandID, byte[] data) {
+        L.i(Tag, "sendRecorderData groupID:" + groupID + " commandID:" + commandID);
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.sendPassthroughData(groupID, commandID, data);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     public void sendPassthroughData(int groupID, int commandID, byte[] data) {
         L.i(Tag, "setPassthroughData groupID:" + groupID + " commandID:" + commandID);
@@ -1469,6 +1484,71 @@ public class McuManager {
     }
 
 
+    //--------------------------------------------------------//
+    private HashMap<String, RecorderLinister> recorderLinisterHashMap = new HashMap<>();
+
+    private IRecorderLinister.Stub iRecorderLinisterStub = new IRecorderLinister.Stub() {
+        @Override
+        public void onRecorderData(int groupID, int commandID, byte[] data) throws RemoteException {
+            for (String key : recorderLinisterHashMap.keySet()) {
+                if (recorderLinisterHashMap.get(key) != null) {
+                    recorderLinisterHashMap.get(key).onRecorderData(groupID, commandID, data);
+                } else {
+                    recorderLinisterHashMap.remove(key);
+                    if (recorderLinisterHashMap.size() <= 0) {
+                        removeRecorderLinister();
+                    }
+                }
+            }
+        }
+
+    };
+
+    public void setRecorderLinister(RecorderLinister linister) {
+        if (linister != null) {
+            ReconnectSystemInterface.hasRegister_IRecorderLinister = true;
+            if (!recorderLinisterHashMap.containsKey(linister.toString())) {
+                recorderLinisterHashMap.put(linister.toString(), linister);
+                setRecorderLinister();
+            }
+        }
+    }
+
+    public void removeRecorderLinister(RecorderLinister linister) {
+        if (linister != null) {
+            if (recorderLinisterHashMap.containsKey(linister.toString())) {
+                recorderLinisterHashMap.remove(linister.toString());
+                if (recorderLinisterHashMap.size() <= 0) {
+                    removeRecorderLinister();
+                }
+            }
+        }
+    }
+
+    private void setRecorderLinister() {
+        if (isRemoteServiceAlive()) {
+            try {
+                L.i(Tag, "setRecorderLinister");
+                systemService.setRecorderLinister(iRecorderLinisterStub);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void removeRecorderLinister() {
+        if (isRemoteServiceAlive()) {
+            try {
+                L.i(Tag, "removeRecorderLinister");
+                ReconnectSystemInterface.hasRegister_IRecorderLinister = false;
+                systemService.removeRecorderLinister(iRecorderLinisterStub);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     private void reconnectCallback() {
         if (ReconnectSystemInterface.hasRegister_IBacklightSwitchLinister) {
             setBacklightSwitchLinister();
@@ -1520,6 +1600,9 @@ public class McuManager {
         }
         if (ReconnectSystemInterface.hasRegister_IHeadSet) {
             setHeadsetLinister();
+        }
+        if (ReconnectSystemInterface.hasRegister_IRecorderLinister) {
+            setRecorderLinister();
         }
     }
 

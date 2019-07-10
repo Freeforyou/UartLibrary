@@ -7,7 +7,7 @@ interface IAirControlLinister {
     /**
     * 空调回调
     */
-    void onAirSwitch(boolean open);
+    void onAirSwitch(boolean open);//打开空调 关闭空调
     void onAirBlowMode(int blowmode);
     void onAirAutoSwitch(boolean open);
     void onAirBlowDegree(int degree);
