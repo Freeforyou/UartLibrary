@@ -329,7 +329,7 @@ public class McuManager {
         L.i(Tag, "sendRecorderData groupID:" + groupID + " commandID:" + commandID);
         if (isRemoteServiceAlive()) {
             try {
-                systemService.sendPassthroughData(groupID, commandID, data);
+                systemService.sendRecorderData(groupID, commandID, data);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
