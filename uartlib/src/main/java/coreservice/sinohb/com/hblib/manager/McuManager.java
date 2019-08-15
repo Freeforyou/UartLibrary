@@ -380,6 +380,18 @@ public class McuManager {
     }
 
 
+    public void reportDeviceDodel(int model){
+        L.i(Tag, "reportDeviceDodel  model:"+model);
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.reportDeviceDodel(model);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     private HashMap<String, BacklightSwitchLinister> backlightSwitchLinisterHashMap = new HashMap<>();
 
     public void setBacklightSwitchLinister(BacklightSwitchLinister linister) {

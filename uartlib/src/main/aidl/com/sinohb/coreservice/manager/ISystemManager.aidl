@@ -48,7 +48,7 @@ interface ISystemManager {
     int getHeadsetState();
     void requestHeadsetState();
 
-
+    void reportDeviceDodel(int model);
 
     void sendPassthroughData(int groupID,int commandID,inout byte [] data);
     void sendRadioDatas(int groupID,int commandID,inout byte [] data);
