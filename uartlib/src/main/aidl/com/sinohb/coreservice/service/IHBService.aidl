@@ -5,4 +5,5 @@ package com.sinohb.coreservice.service;
 
 interface IHBService {
     IBinder getService(String serviceNmae);
+    void setReconnect(boolean bool,String pkg,String action,IBinder binder);
 }

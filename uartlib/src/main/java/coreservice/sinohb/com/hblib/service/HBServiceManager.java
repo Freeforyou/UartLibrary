@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
 
@@ -22,10 +23,11 @@ public class HBServiceManager {
     private Context context;
     private String callPackage = "";
     private IHBService service;
+    private boolean keepAlive = false;
+    private String serviceAction;
 
     private boolean SPEECH_PERMISSION = false;
     private boolean SYSTEM_PERMISSION = false;
-
 
     public static HBServiceManager getInstance() {
         if (instance == null) {
@@ -40,11 +42,13 @@ public class HBServiceManager {
 
     ServiceStateLinister serviceStateLinister = null;
 
-    public void bindService(Context cxt, ServiceStateLinister linister) {
+    public void bindService(Context cxt, ServiceStateLinister linister, boolean keepAlive, String serviceaction) {
         if (cxt != null) {
             serviceStateLinister = linister;
             this.context = cxt;
-            callPackage = context.getPackageName();
+            this.keepAlive = keepAlive;
+            this.callPackage = context.getPackageName();
+            this.serviceAction = serviceaction;
             if (callPackage != null) {
                 McuManager.Tag = callPackage;
                 SpeechManager.Tag = callPackage;
@@ -67,6 +71,19 @@ public class HBServiceManager {
         SYSTEM_PERMISSION = true;
         connectSystemService();
     }
+
+    IBinder mICallBack = new Binder();
+
+    private void setReconnect() {
+        if (service != null) {
+            try {
+                service.setReconnect(keepAlive, callPackage, serviceAction, mICallBack);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     private void connectSpeechService() {
         if (service != null) {
@@ -106,6 +123,7 @@ public class HBServiceManager {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             L.i(callPackage, "Service  Connected");
             service = IHBService.Stub.asInterface(iBinder);
+            setReconnect();
             connectSystemService();
             connectSpeechService();
             if (serviceStateLinister != null) {
