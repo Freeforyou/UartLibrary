@@ -50,6 +50,26 @@ interface ISystemManager {
 
     void reportDeviceDodel(int model);
 
+    byte [] getCommonParam(byte domain,byte command);
+    void sendCommandParam(byte domain,byte command,inout byte[] data);
+
+    void sendCommonOneData(int groupID,int commandID,inout byte [] data);
+    void setCommonOneLinister(in IPassthroughDataLinister linister);
+    void removeCommonOneLinister(in IPassthroughDataLinister linister);
+
+    void sendCommonTwoData(int groupID,int commandID,inout byte [] data);
+    void setCommonTwoLinister(in IPassthroughDataLinister linister);
+    void removeCommonTwoLinister(in IPassthroughDataLinister linister);
+
+    void sendCommonThreeData(int groupID,int commandID,inout byte [] data);
+    void setCommonThreeLinister(in IPassthroughDataLinister linister);
+    void removeCommonThreeLinister(in IPassthroughDataLinister linister);
+
+    void sendCommonFourData(int groupID,int commandID,inout byte [] data);
+    void setCommonFourLinister(in IPassthroughDataLinister linister);
+    void removeCommonFourLinister(in IPassthroughDataLinister linister);
+
+
     void sendPassthroughData(int groupID,int commandID,inout byte [] data);
     void sendRadioDatas(int groupID,int commandID,inout byte [] data);
 

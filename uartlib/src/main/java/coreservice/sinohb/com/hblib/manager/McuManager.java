@@ -392,6 +392,341 @@ public class McuManager {
     }
 
 
+
+    public byte[] getCommonParam(byte domain, byte command) {
+        L.i(Tag, "getCommonParam() domain:" + domain + "  command:" + command);
+        byte[] result = new byte[]{};
+        if (isRemoteServiceAlive()) {
+            try {
+                result = systemService.getCommonParam(domain, command);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    public void sendCommandParam(byte domain, byte command, byte[] data) {
+        L.i(Tag, "sendCommandParam()");
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.sendCommandParam(domain, command, data);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /*************************start One*****************************/
+    private HashMap<String, PassthroughDataLinister> commonOneLinisterHashMap = new HashMap<>();
+
+    IPassthroughDataLinister.Stub commoneOneReceiver = new IPassthroughDataLinister.Stub() {
+        @Override
+        public void onPassthroughDataReceiver(int groupID, int commandID, byte[] data) throws RemoteException {
+            for (String key : commonOneLinisterHashMap.keySet()) {
+                if (commonOneLinisterHashMap.get(key) != null) {
+                    commonOneLinisterHashMap.get(key).onPassthroughDataReceiver(groupID, commandID, data);
+                } else {
+                    commonOneLinisterHashMap.remove(key);
+                    if (commonOneLinisterHashMap.size() <= 0) {
+                        removeCommonOneLinister();
+                    }
+                }
+            }
+        }
+    };
+
+
+    public void sendCommonOneData(int groupID, int commandID, byte[] data) {
+        L.i(Tag, "sendCommonOneData()");
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.sendCommonOneData(groupID, commandID, data);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setCommonOneLinister(PassthroughDataLinister linister) {
+        if (linister != null) {
+            ReconnectSystemInterface.hasRegister_ICommonOneLinister = true;
+            L.i(Tag, "setCommonOneLinister");
+            if (!commonOneLinisterHashMap.containsKey(linister.toString())) {
+                commonOneLinisterHashMap.put(linister.toString(), linister);
+                setCommonOneLinister();
+            }
+        }
+    }
+
+    public void removeCommonOneLinister(PassthroughDataLinister linister) {
+        if (linister != null) {
+            L.i(Tag, "removeCommonOneLinister");
+            if (commonOneLinisterHashMap.containsKey(linister.toString())) {
+                commonOneLinisterHashMap.remove(linister.toString(), linister);
+                if (commonOneLinisterHashMap.size() <= 0) {
+                    removeCommonOneLinister();
+                }
+            }
+        }
+    }
+
+    private void setCommonOneLinister() {
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.setCommonOneLinister(commoneOneReceiver);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void removeCommonOneLinister() {
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.removeCommonOneLinister(commoneOneReceiver);
+                ReconnectSystemInterface.hasRegister_ICommonOneLinister = false;
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**************************end One****************************/
+
+
+    /*************************start Two*****************************/
+    private HashMap<String, PassthroughDataLinister> commonTwoLinisterHashMap = new HashMap<>();
+
+    IPassthroughDataLinister.Stub commoneTwoReceiver = new IPassthroughDataLinister.Stub() {
+        @Override
+        public void onPassthroughDataReceiver(int groupID, int commandID, byte[] data) throws RemoteException {
+            for (String key : commonTwoLinisterHashMap.keySet()) {
+                if (commonTwoLinisterHashMap.get(key) != null) {
+                    commonTwoLinisterHashMap.get(key).onPassthroughDataReceiver(groupID, commandID, data);
+                } else {
+                    commonTwoLinisterHashMap.remove(key);
+                    if (commonTwoLinisterHashMap.size() <= 0) {
+                        removeCommonTwoLinister();
+                    }
+                }
+            }
+        }
+    };
+
+
+    public void sendCommonTwoData(int groupID, int commandID, byte[] data) {
+        L.i(Tag, "sendCommonTwoData()");
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.sendCommonTwoData(groupID, commandID, data);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setCommonTwoLinister(PassthroughDataLinister linister) {
+        if (linister != null) {
+            ReconnectSystemInterface.hasRegister_ICommonTwoLinister = true;
+            L.i(Tag, "setCommonOneLinister");
+            if (!commonTwoLinisterHashMap.containsKey(linister.toString())) {
+                commonTwoLinisterHashMap.put(linister.toString(), linister);
+                setCommonTwoLinister();
+            }
+        }
+    }
+
+    public void removeCommonTwoLinister(PassthroughDataLinister linister) {
+        if (linister != null) {
+            L.i(Tag, "removeCommonTwoLinister");
+            if (commonTwoLinisterHashMap.containsKey(linister.toString())) {
+                commonTwoLinisterHashMap.remove(linister.toString(), linister);
+                if (commonTwoLinisterHashMap.size() <= 0) {
+                    removeCommonTwoLinister();
+                }
+            }
+        }
+    }
+
+    private void setCommonTwoLinister() {
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.setCommonTwoLinister(commoneTwoReceiver);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void removeCommonTwoLinister() {
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.removeCommonTwoLinister(commoneTwoReceiver);
+                ReconnectSystemInterface.hasRegister_ICommonTwoLinister = false;
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**************************end Two****************************/
+
+    /*************************start Three*****************************/
+    private HashMap<String, PassthroughDataLinister> commonThreeLinisterHashMap = new HashMap<>();
+
+    IPassthroughDataLinister.Stub commoneThreeReceiver = new IPassthroughDataLinister.Stub() {
+        @Override
+        public void onPassthroughDataReceiver(int groupID, int commandID, byte[] data) throws RemoteException {
+            for (String key : commonThreeLinisterHashMap.keySet()) {
+                if (commonThreeLinisterHashMap.get(key) != null) {
+                    commonThreeLinisterHashMap.get(key).onPassthroughDataReceiver(groupID, commandID, data);
+                } else {
+                    commonThreeLinisterHashMap.remove(key);
+                    if (commonThreeLinisterHashMap.size() <= 0) {
+                        removeCommonThreeLinister();
+                    }
+                }
+            }
+        }
+    };
+
+
+    public void sendCommonThreeData(int groupID, int commandID, byte[] data) {
+        L.i(Tag, "sendCommonThreeData()");
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.sendCommonThreeData(groupID, commandID, data);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setCommonThreeLinister(PassthroughDataLinister linister) {
+        if (linister != null) {
+            ReconnectSystemInterface.hasRegister_ICommonThreeLinister = true;
+            L.i(Tag, "setCommonThreeLinister");
+            if (!commonThreeLinisterHashMap.containsKey(linister.toString())) {
+                commonThreeLinisterHashMap.put(linister.toString(), linister);
+                setCommonThreeLinister();
+            }
+        }
+    }
+
+    public void removeCommonThreeLinister(PassthroughDataLinister linister) {
+        if (linister != null) {
+            L.i(Tag, "removeCommonThreeLinister");
+            if (commonThreeLinisterHashMap.containsKey(linister.toString())) {
+                commonThreeLinisterHashMap.remove(linister.toString(), linister);
+                if (commonThreeLinisterHashMap.size() <= 0) {
+                    removeCommonThreeLinister();
+                }
+            }
+        }
+    }
+
+    private void setCommonThreeLinister() {
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.setCommonThreeLinister(commoneThreeReceiver);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void removeCommonThreeLinister() {
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.removeCommonThreeLinister(commoneThreeReceiver);
+                ReconnectSystemInterface.hasRegister_ICommonThreeLinister = false;
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**************************end Three****************************/
+
+
+    /*************************start Four*****************************/
+    private HashMap<String, PassthroughDataLinister> commonFourLinisterHashMap = new HashMap<>();
+
+    IPassthroughDataLinister.Stub commoneFourReceiver = new IPassthroughDataLinister.Stub() {
+        @Override
+        public void onPassthroughDataReceiver(int groupID, int commandID, byte[] data) throws RemoteException {
+            for (String key : commonFourLinisterHashMap.keySet()) {
+                if (commonFourLinisterHashMap.get(key) != null) {
+                    commonFourLinisterHashMap.get(key).onPassthroughDataReceiver(groupID, commandID, data);
+                } else {
+                    commonFourLinisterHashMap.remove(key);
+                    if (commonFourLinisterHashMap.size() <= 0) {
+                        removeCommonFourLinister();
+                    }
+                }
+            }
+        }
+    };
+
+
+    public void sendCommonFourData(int groupID, int commandID, byte[] data) {
+        L.i(Tag, "sendCommonFourData()");
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.sendCommonFourData(groupID, commandID, data);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setCommonFourLinister(PassthroughDataLinister linister) {
+        if (linister != null) {
+            ReconnectSystemInterface.hasRegister_ICommonFourLinister = true;
+            L.i(Tag, "setCommonFourLinister");
+            if (!commonFourLinisterHashMap.containsKey(linister.toString())) {
+                commonFourLinisterHashMap.put(linister.toString(), linister);
+                setCommonFourLinister();
+            }
+        }
+    }
+
+    public void removeCommonFourLinister(PassthroughDataLinister linister) {
+        if (linister != null) {
+            L.i(Tag, "removeCommonThreeLinister");
+            if (commonFourLinisterHashMap.containsKey(linister.toString())) {
+                commonFourLinisterHashMap.remove(linister.toString(), linister);
+                if (commonFourLinisterHashMap.size() <= 0) {
+                    removeCommonFourLinister();
+                }
+            }
+        }
+    }
+
+    private void setCommonFourLinister() {
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.setCommonFourLinister(commoneFourReceiver);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void removeCommonFourLinister() {
+        if (isRemoteServiceAlive()) {
+            try {
+                systemService.removeCommonFourLinister(commoneFourReceiver);
+                ReconnectSystemInterface.hasRegister_ICommonFourLinister = false;
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**************************end Three****************************/
+
     private HashMap<String, BacklightSwitchLinister> backlightSwitchLinisterHashMap = new HashMap<>();
 
     public void setBacklightSwitchLinister(BacklightSwitchLinister linister) {
@@ -1532,6 +1867,18 @@ public class McuManager {
         }
         if (ReconnectSystemInterface.hasRegister_IHeadSet) {
             setHeadsetLinister();
+        }
+        if (ReconnectSystemInterface.hasRegister_ICommonOneLinister) {
+            setCommonOneLinister();
+        }
+        if (ReconnectSystemInterface.hasRegister_ICommonTwoLinister) {
+            setCommonTwoLinister();
+        }
+        if (ReconnectSystemInterface.hasRegister_ICommonThreeLinister) {
+            setCommonThreeLinister();
+        }
+        if (ReconnectSystemInterface.hasRegister_ICommonFourLinister) {
+            setCommonFourLinister();
         }
     }
 
